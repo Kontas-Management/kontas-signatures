@@ -422,20 +422,20 @@ Horațiu,Hagiu,Senior Partner,+40 723 321 210,horatiu.hagiu@kontas.ro,"Col. Cons
             const socialLinks = [];
             
             if (data.youtube) {
-                socialLinks.push(`<a href="${data.youtube}" target="_blank">
-                    <img src="https://kontas.ro/wp-content/uploads/2025/09/YT-Logo.png" alt="YouTube" style="width: 20px; height: 20px;">
+                socialLinks.push(`<a href="${data.youtube}" target="_blank" style="text-decoration: none; margin-right: 8px;">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/YT-Logo.png" alt="YouTube" style="width: 24px; height: auto; vertical-align: middle;">
                 </a>`);
             }
             
             if (data.linkedin) {
-                socialLinks.push(`<a href="${data.linkedin}" target="_blank">
-                    <img src="https://kontas.ro/wp-content/uploads/2025/09/LI-Logo.png" alt="LinkedIn" style="width: 20px; height: 20px;">
+                socialLinks.push(`<a href="${data.linkedin}" target="_blank" style="text-decoration: none; margin-right: 8px;">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/LI-Logo.png" alt="LinkedIn" style="width: 24px; height: auto; vertical-align: middle;">
                 </a>`);
             }
             
             if (data.facebook) {
-                socialLinks.push(`<a href="${data.facebook}" target="_blank">
-                    <img src="https://kontas.ro/wp-content/uploads/2025/09/FB-Logo.png" alt="Facebook" style="width: 20px; height: 20px;">
+                socialLinks.push(`<a href="${data.facebook}" target="_blank" style="text-decoration: none; margin-right: 8px;">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/FB-Logo.png" alt="Facebook" style="width: 24px; height: auto; vertical-align: middle;">
                 </a>`);
             }
 
@@ -445,80 +445,27 @@ Horațiu,Hagiu,Senior Partner,+40 723 321 210,horatiu.hagiu@kontas.ro,"Col. Cons
 <html>
 <head>
     <meta charset="UTF-8">
-    <style>
-        .signature-table {
-            font-family: Arial, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 600px;
-        }
-        .contact-info {
-            color: #666666;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .name {
-            color: #00B5A5;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 2px;
-        }
-        .title {
-            color: #999999;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        .tagline {
-            color: #00B5A5;
-            font-size: 12px;
-            font-weight: normal;
-            margin-top: 5px;
-        }
-        .social-links {
-            margin-top: 10px;
-        }
-        .social-links a {
-            text-decoration: none;
-            margin-right: 8px;
-            display: inline-block;
-        }
-        .website-link {
-            color: #333333;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-        }
-    </style>
 </head>
-<body>
-    <table class="signature-table" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <td style="vertical-align: top; padding-right: 20px; width: 65%;">
-                <div class="name">${data.prenume} ${data.nume}</div>
-                <div class="title">${data.titlu}</div>
-                <div class="contact-info">
-                    ${data.telefon}<br>
-                    ${data.adresa.replace(/\n/g, '<br>')}
-                </div>
-            </td>
-            <td style="vertical-align: top; text-align: right; width: 35%;">
-                <div style="margin-bottom: 10px;">
-                    <img src="https://kontas.ro/wp-content/uploads/2025/09/social-media-profile-picture-Kontas.png" alt="KONTAS Logo K" style="width: 60px; height: auto; display: block; margin-bottom: 10px;">
-                    <img src="https://kontas.ro/wp-content/uploads/2025/09/3-logo-Kontas-RGB.svg" alt="KONTAS" style="width: 120px; height: auto; display: block; margin-bottom: 5px;">
-                </div>
-                
-                <div class="tagline">
-                    Mastering finance.<br>
-                    Elevating business.
-                </div>
-                
-                <div class="social-links">
-                    ${socialLinksHTML}
-                    <a href="https://kontas.ro" target="_blank" class="website-link">kontas.ro</a>
-                </div>
-            </td>
-        </tr>
-    </table>
+<body style="font-family: Arial, sans-serif; color: #333;">
+    <div style="max-width: 450px;">
+        <p style="margin: 0 0 2px 0; font-size: 16px; color: #00B5A5; font-weight: bold;">${data.prenume} ${data.nume}</p>
+        <p style="margin: 0 0 8px 0; font-size: 14px; color: #888;">${data.titlu}</p>
+        <p style="margin: 0 0 2px 0; font-size: 14px; color: #333;">${data.telefon}</p>
+        <p style="margin: 0 0 20px 0; font-size: 14px; color: #333;">${data.adresa.replace(/\n/g, '<br>')}</p>
+
+        <img src="https://kontas.ro/wp-content/uploads/2025/09/social-media-profile-picture-Kontas.png" alt="KONTAS Logo K" style="width: 150px; height: auto; display: block; margin-bottom: 15px;">
+        <img src="https://kontas.ro/wp-content/uploads/2025/09/3-logo-Kontas-RGB.svg" alt="KONTAS" style="width: 200px; height: auto; display: block; margin-bottom: 10px;">
+        
+        <p style="margin: 0 0 15px 0; font-size: 14px; color: #00B5A5; line-height: 1.3;">
+            Mastering finance.<br>
+            Elevating business.
+        </p>
+        
+        <div>
+            ${socialLinksHTML}
+            <a href="https://kontas.ro" target="_blank" style="text-decoration: none; color: #333; font-size: 14px; font-weight: bold; vertical-align: middle;">kontas.ro</a>
+        </div>
+    </div>
 </body>
 </html>`;
         }
@@ -530,7 +477,7 @@ Horațiu,Hagiu,Senior Partner,+40 723 321 210,horatiu.hagiu@kontas.ro,"Col. Cons
             const html = generateSignatureHTML(data);
             
             // Extrage doar partea din body pentru preview
-            const bodyContent = html.match(/<body>([\s\S]*)<\/body>/)[1];
+            const bodyContent = html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1];
             document.getElementById('signature-preview').innerHTML = bodyContent;
         }
 
