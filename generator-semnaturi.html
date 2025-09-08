@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Semnături Email KONTAS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #00B5A5, #008A7A);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-section, .preview-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-section h2, .preview-section h2 {
+            color: #00B5A5;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: #00B5A5;
+            border-bottom-color: #00B5A5;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #00B5A5;
+        }
+
+        .file-upload {
+            border: 2px dashed #00B5A5;
+            border-radius: 6px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .file-upload:hover {
+            background-color: #f0fffe;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .btn {
+            background: #00B5A5;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #008A7A;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .csv-info {
+            background: #e8f8f7;
+            border: 1px solid #00B5A5;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .csv-info h4 {
+            color: #00B5A5;
+            margin-bottom: 10px;
+        }
+
+        .csv-example {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .preview-frame {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            background: white;
+            min-height: 300px;
+        }
+
+        .signature-preview {
+            font-family: Arial, sans-serif;
+        }
+
+        .signature-preview .signature-table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .signature-preview .contact-info {
+            color: #666666;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .signature-preview .name {
+            color: #00B5A5;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .signature-preview .title {
+            color: #999999;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .signature-preview .tagline {
+            color: #00B5A5;
+            font-size: 11px;
+            font-weight: normal;
+            margin-top: 8px;
+            line-height: 1.2;
+        }
+
+        .signature-preview .social-links {
+            margin-top: 8px;
+        }
+
+        .signature-preview .social-links a {
+            text-decoration: none;
+            margin-right: 6px;
+            display: inline-block;
+        }
+
+        .signature-preview .website-link {
+            color: #333333;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
+        .signature-preview .logo-section {
+            text-align: center;
+        }
+
+        .batch-results {
+            background: #e8f8f7;
+            border: 1px solid #00B5A5;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .batch-results h4 {
+            color: #00B5A5;
+            margin-bottom: 15px;
+        }
+
+        .processing-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .processing-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #00B5A5;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Generator Semnături Email</h1>
+            <p>Creează semnături profesionale pentru echipa KONTAS</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Configurare</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('individual')">Angajat Individual</div>
+                    <div class="tab" onclick="switchTab('batch')">Import CSV</div>
+                </div>
+
+                <div id="individual-tab" class="tab-content active">
+                    <form id="signature-form">
+                        <div class="form-group">
+                            <label for="prenume">Prenume:</label>
+                            <input type="text" id="prenume" name="prenume" value="Horațiu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nume">Nume:</label>
+                            <input type="text" id="nume" name="nume" value="Hagiu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="titlu">Titlu:</label>
+                            <input type="text" id="titlu" name="titlu" value="Senior Partner" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefon">Telefon:</label>
+                            <input type="text" id="telefon" name="telefon" value="+40 723 321 210" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" value="horatiu.hagiu@kontas.ro" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adresa">Adresă:</label>
+                            <textarea id="adresa" name="adresa" rows="2" required>Col. Constantin Blăremberg 2-4, et. 4
+Sector 1, București 011879</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="youtube">Link YouTube (opțional):</label>
+                            <input type="url" id="youtube" name="youtube" value="https://youtube.com/@kontas">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="linkedin">Link LinkedIn (opțional):</label>
+                            <input type="url" id="linkedin" name="linkedin" value="https://linkedin.com/company/kontas">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="facebook">Link Facebook (opțional):</label>
+                            <input type="url" id="facebook" name="facebook" value="https://facebook.com/kontas">
+                        </div>
+
+                        <button type="button" class="btn" onclick="generateSingle()">Generează Semnătură</button>
+                        <button type="button" class="btn btn-secondary" onclick="downloadSingle()">Download HTML</button>
+                    </form>
+                </div>
+
+                <div id="batch-tab" class="tab-content">
+                    <div class="csv-info">
+                        <h4>Format CSV Acceptat</h4>
+                        <p>Fișierul CSV trebuie să conțină următoarele coloane (în această ordine):</p>
+                        <div class="csv-example">
+Prenume,Nume,Titlu,Telefon,Email,Adresa,YouTube,LinkedIn,Facebook
+Horațiu,Hagiu,Senior Partner,+40 723 321 210,horatiu.hagiu@kontas.ro,"Col. Constantin Blăremberg 2-4, et. 4, Sector 1, București 011879",https://youtube.com/@kontas,https://linkedin.com/company/kontas,https://facebook.com/kontas
+                        </div>
+                    </div>
+
+                    <div class="file-upload" onclick="document.getElementById('csv-file').click()">
+                        <input type="file" id="csv-file" accept=".csv" onchange="handleCSVUpload(event)">
+                        <div>
+                            <strong>Selectează fișierul CSV</strong><br>
+                            sau trage și plasează aici
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn" onclick="processBatch()" id="process-batch" style="display: none;">Procesează Toate</button>
+                    <button type="button" class="btn btn-secondary" onclick="downloadBatch()" id="download-batch" style="display: none;">Download Arhivă ZIP</button>
+
+                    <div id="batch-results" class="batch-results" style="display: none;">
+                        <h4>Rezultate Procesare</h4>
+                        <div id="processing-list" class="processing-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h2>Preview</h2>
+                <div class="preview-frame">
+                    <div id="signature-preview" class="signature-preview">
+                        <!-- Preview va fi generat aici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let csvData = [];
+        let generatedSignatures = [];
+
+        // Inițializare preview
+        document.addEventListener('DOMContentLoaded', function() {
+            generatePreview();
+            
+            // Event listeners pentru actualizarea preview-ului în timp real
+            const inputs = document.querySelectorAll('#signature-form input, #signature-form textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', generatePreview);
+            });
+        });
+
+        function switchTab(tabName) {
+            // Actualizează tab-urile
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function generateSignatureHTML(data) {
+            const socialLinks = [];
+            
+            if (data.youtube) {
+                socialLinks.push(`<a href="${data.youtube}" target="_blank">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/YT-Logo.png" alt="YouTube" style="width: 20px; height: 20px;">
+                </a>`);
+            }
+            
+            if (data.linkedin) {
+                socialLinks.push(`<a href="${data.linkedin}" target="_blank">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/LI-Logo.png" alt="LinkedIn" style="width: 20px; height: 20px;">
+                </a>`);
+            }
+            
+            if (data.facebook) {
+                socialLinks.push(`<a href="${data.facebook}" target="_blank">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/FB-Logo.png" alt="Facebook" style="width: 20px; height: 20px;">
+                </a>`);
+            }
+
+            const socialLinksHTML = socialLinks.join('');
+
+            return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .signature-table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+        }
+        .contact-info {
+            color: #666666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .name {
+            color: #00B5A5;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .title {
+            color: #999999;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .tagline {
+            color: #00B5A5;
+            font-size: 12px;
+            font-weight: normal;
+            margin-top: 5px;
+        }
+        .social-links {
+            margin-top: 10px;
+        }
+        .social-links a {
+            text-decoration: none;
+            margin-right: 8px;
+            display: inline-block;
+        }
+        .website-link {
+            color: #333333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <table class="signature-table" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td style="vertical-align: top; padding-right: 20px; width: 65%;">
+                <div class="name">${data.prenume} ${data.nume}</div>
+                <div class="title">${data.titlu}</div>
+                <div class="contact-info">
+                    ${data.telefon}<br>
+                    ${data.adresa.replace(/\n/g, '<br>')}
+                </div>
+            </td>
+            <td style="vertical-align: top; text-align: right; width: 35%;">
+                <div style="margin-bottom: 10px;">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/social-media-profile-picture-Kontas.png" alt="KONTAS Logo K" style="width: 60px; height: auto; display: block; margin-bottom: 10px;">
+                    <img src="https://kontas.ro/wp-content/uploads/2025/09/3-logo-Kontas-RGB.svg" alt="KONTAS" style="width: 120px; height: auto; display: block; margin-bottom: 5px;">
+                </div>
+                
+                <div class="tagline">
+                    Mastering finance.<br>
+                    Elevating business.
+                </div>
+                
+                <div class="social-links">
+                    ${socialLinksHTML}
+                    <a href="https://kontas.ro" target="_blank" class="website-link">kontas.ro</a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+        }
+
+        function generatePreview() {
+            const formData = new FormData(document.getElementById('signature-form'));
+            const data = Object.fromEntries(formData.entries());
+            
+            const html = generateSignatureHTML(data);
+            
+            // Extrage doar partea din body pentru preview
+            const bodyContent = html.match(/<body>([\s\S]*)<\/body>/)[1];
+            document.getElementById('signature-preview').innerHTML = bodyContent;
+        }
+
+        function generateSingle() {
+            generatePreview();
+            alert('Semnătura a fost generată! Verifică preview-ul și apasă "Download HTML" pentru a descărca.');
+        }
+
+        function downloadSingle() {
+            const formData = new FormData(document.getElementById('signature-form'));
+            const data = Object.fromEntries(formData.entries());
+            
+            const html = generateSignatureHTML(data);
+            const filename = `${data.prenume}_${data.nume}_${data.email.replace('@', '_at_')}.html`;
+            
+            downloadFile(html, filename);
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseCSV(text);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            
+            csvData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length >= 5) { // Minimum prenume, nume, titlu, telefon, email
+                    csvData.push({
+                        prenume: values[0] || '',
+                        nume: values[1] || '',
+                        titlu: values[2] || '',
+                        telefon: values[3] || '',
+                        email: values[4] || '',
+                        adresa: values[5] || '',
+                        youtube: values[6] || '',
+                        linkedin: values[7] || '',
+                        facebook: values[8] || ''
+                    });
+                }
+            }
+
+            document.getElementById('process-batch').style.display = csvData.length > 0 ? 'inline-block' : 'none';
+            
+            if (csvData.length > 0) {
+                alert(`CSV încărcat cu succes! ${csvData.length} înregistrări detectate.`);
+            } else {
+                alert('Nu s-au găsit înregistrări valide în fișierul CSV.');
+            }
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result.map(item => item.replace(/^"|"$/g, ''));
+        }
+
+        function processBatch() {
+            if (csvData.length === 0) {
+                alert('Nu există date CSV de procesat.');
+                return;
+            }
+
+            generatedSignatures = [];
+            const processingList = document.getElementById('processing-list');
+            processingList.innerHTML = '';
+            document.getElementById('batch-results').style.display = 'block';
+
+            csvData.forEach((data, index) => {
+                const html = generateSignatureHTML(data);
+                const filename = `${data.prenume}_${data.nume}_${data.email.replace('@', '_at_')}.html`;
+                
+                generatedSignatures.push({
+                    filename: filename,
+                    content: html
+                });
+
+                const item = document.createElement('div');
+                item.className = 'processing-item';
+                item.textContent = `✓ ${data.prenume} ${data.nume} (${data.email})`;
+                processingList.appendChild(item);
+            });
+
+            document.getElementById('download-batch').style.display = 'inline-block';
+            alert(`${generatedSignatures.length} semnături generate cu succes!`);
+        }
+
+        async function downloadBatch() {
+            if (generatedSignatures.length === 0) {
+                alert('Nu există semnături generate pentru download.');
+                return;
+            }
+
+            const zip = new JSZip();
+
+            generatedSignatures.forEach(signature => {
+                zip.file(signature.filename, signature.content);
+            });
+
+            try {
+                const content = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'semnaturi_kontas.zip';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Eroare la crearea arhivei ZIP: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
